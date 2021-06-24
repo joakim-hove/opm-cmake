@@ -30,7 +30,8 @@
 namespace Opm {
 class UDQState {
 public:
-    UDQState(double undefined);
+    explicit UDQState(double undefined);
+    UDQState(double undefined, const RestartIO::RstState& rst_state);
 
     bool has(const std::string& key) const;
     bool has_well_var(const std::string& well, const std::string& key) const;

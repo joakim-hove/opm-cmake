@@ -49,6 +49,17 @@ UDQState::UDQState(double undefined) :
     undef_value(undefined)
 {}
 
+UDQState(double undefined, const RestartIO::RstState& rst_state) :
+    UDQState(undefined)
+{
+    for (const auto& rst_udq : rst_state) {
+        if (rst_udq.var_type == UDQVarType::WELL_VAR) {
+            for (const auto& [wname, value] : rst_udq.well_values) {
+            }
+        }
+    }
+}
+
 bool UDQState::has(const std::string& key) const {
     auto res_iter = this->values.find(key);
     if (res_iter == this->values.end())

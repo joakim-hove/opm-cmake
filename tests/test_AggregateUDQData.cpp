@@ -749,6 +749,15 @@ BOOST_AUTO_TEST_CASE (Declared_UDQ_data)
 
 
         BOOST_CHECK_EQUAL(rst_state.udqs[0].define.value(), "(WOPR PROD1 - 170) * 0.60");
+
+
+
+        const auto& udq_params = es.runspec().udqParams();
+        Opm::UDQConfig rst_config(udq_params, rst_state);
+        Opm::UDQState rst_state(rst_state);
+        auto deck_config = sched[1].udq();
+        BOOST_CHECK_EQUAL( deck_config.size(), rst_config.size());
+        BOOST_CHECK( deck_config == rst_config );
     }
 }
 

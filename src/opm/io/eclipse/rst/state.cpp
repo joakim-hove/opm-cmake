@@ -208,17 +208,29 @@ void RstState::add_udqs(const std::vector<int>& iudq,
         auto& udq = this->udqs.back();
         if (udq.var_type == UDQVarType::WELL_VAR) {
             for (std::size_t well_index = 0; well_index < this->wells.size(); well_index++) {
-                auto well_value = dudw[ udq_index * this->header.num_wells + well_index];
+                auto value = dudw[ udq_index * this->header.num_wells + well_index];
+                if (value == UDQ::restart_default)
+                    continue;
+
                 const auto& well_name = this->wells[well_index].name;
-                udq.add_well_value( well_name, well_value );
+                if (!udq.define.has_value())
+                    udq.update_assign(well_name, value);
+
+                udq.add_well_value( well_name, value );
             }
         }
 
         if (udq.var_type == UDQVarType::GROUP_VAR) {
             for (std::size_t group_index = 0; group_index < this->groups.size(); group_index++) {
-                auto group_value = dudg[ udq_index * this->header.ngroup + group_index];
+                auto value = dudg[ udq_index * this->header.ngroup + group_index];
+                if (value == UDQ::restart_default)
+                    continue;
+
                 const auto& group_name = this->groups[group_index].name;
-                udq.add_group_value( group_name, group_value );
+                if (!udq.define.has_value())
+                    udq.update_assign(group_name, value);
+
+                udq.add_group_value( group_name, value );
             }
         }
 

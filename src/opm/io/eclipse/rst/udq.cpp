@@ -48,5 +48,11 @@ void RstUDQ::add_field_value(double value) {
     this->field_value = value;
 }
 
+void RstUDQ::update_assign(const std::string& wgname, double value) {
+    this->assign_value = value;
+    this->wgname_select.insert( wgname );
+}
+
+
 }
 }

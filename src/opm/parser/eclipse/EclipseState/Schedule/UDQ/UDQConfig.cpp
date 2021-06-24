@@ -29,6 +29,10 @@
 #include <opm/parser/eclipse/EclipseState/Schedule/UDQ/UDQInput.hpp>
 #include <opm/parser/eclipse/EclipseState/Schedule/UDQ/UDQState.hpp>
 
+#include <opm/io/eclipse/rst/state.hpp>
+#include <opm/io/eclipse/rst/udq.hpp>
+
+
 namespace Opm {
 
     namespace {
@@ -46,6 +50,19 @@ namespace Opm {
         udqft(this->udq_params)
     {}
 
+    UDQConfig::UDQConfig(const UDQParams& params, const RestartIO::RstState& rst_state) :
+        UDQConfig(params)
+    {
+        for (const auto& rst_udq : rst_state.udqs) {
+            if (rst_udq.define.has_value()) {
+                KeywordLocation location("UDQ", "Restart file", 0);
+                this->add_define(rst_udq.name, location, { rst_udq.define.value()} , rst_state.header.report_step);
+            } else
+                this->add_assign(rst_udq.name, rst_udq.wgname_select, rst_udq.assign_value, rst_state.header.report_step);
+
+            this->add_unit(rst_udq.name, rst_udq.unit);
+        }
+    }
 
     UDQConfig UDQConfig::serializeObject()
     {
@@ -85,6 +102,14 @@ namespace Opm {
             assignment->second.add_record(selector, value, report_step);
     }
 
+    void UDQConfig::add_assign(const std::string& quantity, const std::unordered_set<std::string>& selector, double value, std::size_t report_step) {
+        this->add_node(quantity, UDQAction::ASSIGN);
+        auto assignment = this->m_assignments.find(quantity);
+        if (assignment == this->m_assignments.end())
+            this->m_assignments.insert( std::make_pair(quantity, UDQAssign(quantity, selector, value, report_step )));
+        else
+            assignment->second.add_record(selector, value, report_step);
+    }
 
     void UDQConfig::add_define(const std::string& quantity, const KeywordLocation& location, const std::vector<std::string>& expression, std::size_t report_step) {
         this->add_node(quantity, UDQAction::DEFINE);
@@ -114,7 +139,7 @@ namespace Opm {
           keyword.
         */
         if (!this->has_keyword(keyword))
-            this->add_assign(keyword, {}, 0, 0);
+            this->add_assign(keyword, std::vector<std::string>{}, 0, 0);
         this->units[keyword] = unit;
     }
 
