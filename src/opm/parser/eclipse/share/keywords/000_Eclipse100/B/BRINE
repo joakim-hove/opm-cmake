@@ -3,5 +3,12 @@
   "sections": [
     "RUNSPEC"
   ],
-  "comment": "Multi-Component Brine Model not supported"
+    "size" : 1,
+    "items" : [
+        {
+            "name" : "SALTS",
+            "size_type" : "ALL",
+            "value_type" : "STRING"
+        }
+    ]
 }

@@ -64,6 +64,9 @@ CECON
 BOOST_AUTO_TEST_CASE( COORDSYS ) {
     const std::string input = R"(
 RUNSPEC
+
+BRINE
+
     NUMRES
         1 /
 GRID
@@ -76,7 +79,11 @@ GRID
     COORDSYS
         1 1141 'INCOMP' /
 )";
-    Parser().parseString( input );
+    const auto& deck = Parser().parseString( input );
+
+    const auto& brine = deck.getKeyword("BRINE");
+    const auto& salts = brine.getRecord(0).getItem(0);
+    BOOST_CHECK_EQUAL( salts.data_size(), 0);
 }
 
 BOOST_AUTO_TEST_CASE( DENSITY ) {
@@ -1477,6 +1484,9 @@ RUNSPEC
 OIL
 GAS
 
+BRINE
+NACL KCL /
+
 TABDIMS
  1 2 /
 
@@ -1510,4 +1520,8 @@ SGOF
 
     const auto& sgof = deck.getKeyword("SGOF");
     BOOST_CHECK_EQUAL(sgof.size(), 1);
+
+    const auto& brine = deck.getKeyword("BRINE");
+    const auto& salts = brine.getRecord(0).getItem(0);
+    BOOST_CHECK_EQUAL( salts.data_size(), 2);
 }
