@@ -487,29 +487,38 @@ void injectionGroup(const Opm::Schedule&     sched,
             if ((deck_cmode != Opm::Group::InjectionCMode::FLD) && !group.injectionGroupControlAvailable(Opm::Phase::WATER)) {
                 //group is not free to respond to higher level control)
                 iGrp[nwgmax + IGroup::WInjHighLevCtrl] = 0;
-            } else if (cgroup && ((active_cmode == Opm::Group::InjectionCMode::FLD) || (active_cmode == Opm::Group::InjectionCMode::NONE))) {
-                //a higher level group control is active constraint
-                if ((deck_cmode != Opm::Group::InjectionCMode::FLD) && (deck_cmode != Opm::Group::InjectionCMode::NONE)) {
-                    iGrp[nwgmax + IGroup::WInjHighLevCtrl] = cgroup->insert_index();
-                } else if ((deck_cmode == Opm::Group::InjectionCMode::FLD) && (guide_rate_def != Opm::Group::GuideRateInjTarget::NO_GUIDE_RATE)) {
-                    iGrp[nwgmax + IGroup::WInjHighLevCtrl] = cgroup->insert_index();
-                } else if ((deck_cmode == Opm::Group::InjectionCMode::NONE) && group.injectionGroupControlAvailable(Opm::Phase::WATER) &&
-                           (guide_rate_def != Opm::Group::GuideRateInjTarget::NO_GUIDE_RATE)) {
-                    iGrp[nwgmax + IGroup::WInjHighLevCtrl] = cgroup->insert_index();
-                    //group is directly under higher level controlGroup
-                } else if ((deck_cmode == Opm::Group::InjectionCMode::FLD) && (guide_rate_def == Opm::Group::GuideRateInjTarget::NO_GUIDE_RATE)) {
-                    iGrp[nwgmax + IGroup::WInjHighLevCtrl] = 1;
-                } else if ((deck_cmode == Opm::Group::InjectionCMode::NONE) && group.injectionGroupControlAvailable(Opm::Phase::WATER) &&
-                           (guide_rate_def == Opm::Group::GuideRateInjTarget::NO_GUIDE_RATE)) {
-                    iGrp[nwgmax + IGroup::WInjHighLevCtrl] = 1;
-                }
-            } else if (!cgroup && active_cmode == Opm::Group::InjectionCMode::NONE) {
-                //group is directly under higher level controlGroup
-                if ((deck_cmode == Opm::Group::InjectionCMode::FLD) && (guide_rate_def == Opm::Group::GuideRateInjTarget::NO_GUIDE_RATE)) {
-                    iGrp[nwgmax + IGroup::WInjHighLevCtrl] = 1;
-                } else if ((deck_cmode == Opm::Group::InjectionCMode::NONE) && group.injectionGroupControlAvailable(Opm::Phase::WATER) &&
-                           (guide_rate_def == Opm::Group::GuideRateInjTarget::NO_GUIDE_RATE)) {
-                    iGrp[nwgmax + IGroup::WInjHighLevCtrl] = 1;
+            } else {
+                if (cgroup) {
+                    if ((active_cmode == Opm::Group::InjectionCMode::FLD) || (active_cmode == Opm::Group::InjectionCMode::NONE)) {
+                        //a higher level group control is active constraint
+                        if ((deck_cmode != Opm::Group::InjectionCMode::FLD) && (deck_cmode != Opm::Group::InjectionCMode::NONE)) {
+                            iGrp[nwgmax + IGroup::WInjHighLevCtrl] = cgroup->insert_index();
+                        } else {
+                            if (guide_rate_def == Opm::Group::GuideRateInjTarget::NO_GUIDE_RATE) {
+
+                                if (deck_cmode == Opm::Group::InjectionCMode::FLD)
+                                    iGrp[nwgmax + IGroup::WInjHighLevCtrl] = 1;
+                                else if ((deck_cmode == Opm::Group::InjectionCMode::NONE) && group.injectionGroupControlAvailable(Opm::Phase::WATER))
+                                    iGrp[nwgmax + IGroup::WInjHighLevCtrl] = 1;
+
+                            } else {
+
+                                if (deck_cmode == Opm::Group::InjectionCMode::FLD)
+                                    iGrp[nwgmax + IGroup::WInjHighLevCtrl] = cgroup->insert_index();
+                                else if ((deck_cmode == Opm::Group::InjectionCMode::NONE) && group.injectionGroupControlAvailable(Opm::Phase::WATER))
+                                    iGrp[nwgmax + IGroup::WInjHighLevCtrl] = cgroup->insert_index();
+
+                            }
+                        }
+                    }
+                } else {
+                    if ((active_cmode == Opm::Group::InjectionCMode::NONE) && (guide_rate_def == Opm::Group::GuideRateInjTarget::NO_GUIDE_RATE)) {
+                        //group is directly under higher level controlGroup
+                        if (deck_cmode == Opm::Group::InjectionCMode::FLD)
+                            iGrp[nwgmax + IGroup::WInjHighLevCtrl] = 1;
+                        else if ((deck_cmode == Opm::Group::InjectionCMode::NONE) && group.injectionGroupControlAvailable(Opm::Phase::WATER))
+                            iGrp[nwgmax + IGroup::WInjHighLevCtrl] = 1;
+                    }
                 }
             }
 

@@ -233,6 +233,7 @@ BOOST_AUTO_TEST_CASE(group_test) {
                                                             0, 0);
 
     auto groupData = Opm::RestartIO::Helpers::AggregateGroupData(ih);
+    sumState.update("FMCTP", -1);
     groupData.captureDeclaredGroupData(simCase.sched, units, sim_step, sumState, ih);
 
     const auto& igrp = groupData.getIGroup();
@@ -286,6 +287,7 @@ BOOST_AUTO_TEST_CASE(State_test) {
                                                             0, 0);
 
     auto wellData = Opm::RestartIO::Helpers::AggregateWellData(ih);
+    sumState.update("FMCTP", -1);
     wellData.captureDeclaredWellData(simCase.sched, units, sim_step, action_state, sumState, ih);
     wellData.captureDynamicWellData(simCase.sched, sim_step, {} , sumState);
 

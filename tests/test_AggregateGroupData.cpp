@@ -452,6 +452,9 @@ Opm::SummaryState sim_state()
     state.update_group_var("GRP1", "GOIGR", 0.123);
     state.update_group_var("GRP1", "GWIGR", 1234.5);
     state.update_group_var("GRP1", "GGIGR", 2345.6);
+    state.update_group_var("GRP1", "GMCTP", -1);
+    state.update_group_var("GRP1", "GMCTW", -1);
+    state.update_group_var("GRP1", "GMCTG", -1);
 
     state.update_group_var("WGRP1", "GOPR",   23.);
     state.update_group_var("WGRP1", "GGPR",   50237.);
@@ -463,6 +466,9 @@ Opm::SummaryState sim_state()
     state.update_group_var("WGRP1", "GOIGR", 1.23);
     state.update_group_var("WGRP1", "GWIGR", 2345.6);
     state.update_group_var("WGRP1", "GGIGR", 3456.7);
+    state.update_group_var("WGRP1", "GMCTP", -1);
+    state.update_group_var("WGRP1", "GMCTW", -1);
+    state.update_group_var("WGRP1", "GMCTG", -1);
 
     state.update_group_var("WGRP2", "GOPR",   43.);
     state.update_group_var("WGRP2", "GGPR",   70237.);
@@ -474,59 +480,21 @@ Opm::SummaryState sim_state()
     state.update_group_var("WGRP2", "GOIGR", 12.3);
     state.update_group_var("WGRP2", "GWIGR", 345.6);
     state.update_group_var("WGRP2", "GGIGR", 456.7);
+    state.update_group_var("WGRP2", "GMCTP", -1);
+    state.update_group_var("WGRP2", "GMCTW", -1);
+    state.update_group_var("WGRP2", "GMCTG", -1);
 
     state.update("FOPR",   3456.);
     state.update("FGPR",   2003456.);
     state.update("FWPR",   5678.);
 
-    return state;
-}
-
-#if 0
-Opm::SummaryState sim_state()
-{
-    auto state = Opm::SummaryState {Opm::TimeService::now()};
-
-    state.update("GOPR:GRP1",   235.);
-    state.update("GGPR:GRP1",   100237.);
-    state.update("GWPR:GRP1",   239.);
-    state.update("GOPGR:GRP1",  345.6);
-    state.update("GWPGR:GRP1",  456.7);
-    state.update("GGPGR:GRP1",  567.8);
-    state.update("GVPGR:GRP1",  678.9);
-    state.update("GOIGR:GRP1", 0.123);
-    state.update("GWIGR:GRP1", 1234.5);
-    state.update("GGIGR:GRP1", 2345.6);
-
-    state.update("GOPR:WGRP1",   23.);
-    state.update("GGPR:WGRP1",   50237.);
-    state.update("GWPR:WGRP1",   29.);
-    state.update("GOPGR:WGRP1",  456.7);
-    state.update("GWPGR:WGRP1",  567.8);
-    state.update("GGPGR:WGRP1",  678.9);
-    state.update("GVPGR:WGRP1",  789.1);
-    state.update("GOIGR:WGRP1", 1.23);
-    state.update("GWIGR:WGRP1", 2345.6);
-    state.update("GGIGR:WGRP1", 3456.7);
-
-    state.update("GOPR:WGRP2",   43.);
-    state.update("GGPR:WGRP2",   70237.);
-    state.update("GWPR:WGRP2",   59.);
-    state.update("GOPGR:WGRP2",  56.7);
-    state.update("GWPGR:WGRP2",  67.8);
-    state.update("GGPGR:WGRP2",  78.9);
-    state.update("GVPGR:WGRP2",  89.1);
-    state.update("GOIGR:WGRP2", 12.3);
-    state.update("GWIGR:WGRP2", 345.6);
-    state.update("GGIGR:WGRP2", 456.7);
-
-    state.update("FOPR",   3456.);
-    state.update("FGPR",   2003456.);
-    state.update("FWPR",   5678.);
+    state.update("FMCTP", -1);
+    state.update("FMCTG", -1);
+    state.update("FMCTW", -1);
 
     return state;
 }
-#endif
+
 
 Opm::SummaryState sim_state_2()
 {
@@ -588,6 +556,9 @@ Opm::SummaryState sim_state_2()
     state.update_well_var("WIU3", "WMCTL", -1.);
     state.update_well_var("WIU4", "WMCTL", -1.);
 
+    state.update("FMCTP", -1);
+    state.update("FMCTG", -1);
+    state.update("FMCTW", -1);
     return state;
 }
 }

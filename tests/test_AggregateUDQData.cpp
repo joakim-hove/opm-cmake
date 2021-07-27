@@ -161,6 +161,9 @@ Opm::UDQSet make_udq_set(const std::string& name, Opm::UDQVarType var_type, cons
         state.update("FOPR", 145);
         state.update("FLPR", 45);
         state.update("FWPR", 450);
+        state.update("FMCTP", -1);
+        state.update("FMCTG", -1);
+        state.update("FMCTW", -1);
 
         return state;
     }
