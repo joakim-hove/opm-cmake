@@ -462,8 +462,8 @@ void injectionGroup(const Opm::Schedule&     sched,
             iGrp[nwgmax + IGroup::GInjHighLevCtrl] = 0;
         } else {
             //set default value for the group's availability for higher level control for injection
-            iGrp[nwgmax + IGroup::WInjHighLevCtrl] = (groupCurrentlyInjectionControllable(sched, sumState, group, Opm::Phase::WATER, simStep) ) ? 1 : -1;
-            iGrp[nwgmax + IGroup::GInjHighLevCtrl] = (groupCurrentlyInjectionControllable(sched, sumState, group, Opm::Phase::GAS, simStep) ) ? 1 : -1;
+            iGrp[nwgmax + IGroup::WInjHighLevCtrl] = groupCurrentlyInjectionControllable(sched, sumState, group, Opm::Phase::WATER, simStep) ? 1 : -1;
+            iGrp[nwgmax + IGroup::GInjHighLevCtrl] = groupCurrentlyInjectionControllable(sched, sumState, group, Opm::Phase::GAS, simStep) ? 1 : -1;
         }
         return;
     }
@@ -531,7 +531,7 @@ void injectionGroup(const Opm::Schedule&     sched,
     }
     else {
         //set default value for the group's availability for higher level control for water injection for groups with no GCONINJE - WATER
-        iGrp[nwgmax + IGroup::WInjHighLevCtrl] = (groupCurrentlyInjectionControllable(sched, sumState, group, Opm::Phase::WATER, simStep) ) ? 1 : -1;
+        iGrp[nwgmax + IGroup::WInjHighLevCtrl] = groupCurrentlyInjectionControllable(sched, sumState, group, Opm::Phase::WATER, simStep) ? 1 : -1;
     }
 
     // GAS INJECTION GROUP CONTROL
@@ -596,7 +596,7 @@ void injectionGroup(const Opm::Schedule&     sched,
         }
     } else {
         //set default value for the group's availability for higher level control for water injection for groups with no GCONINJE - WATER
-        iGrp[nwgmax + IGroup::GInjHighLevCtrl] = (groupCurrentlyInjectionControllable(sched, sumState, group, Opm::Phase::GAS, simStep) ) ? 1 : -1;
+        iGrp[nwgmax + IGroup::GInjHighLevCtrl] = groupCurrentlyInjectionControllable(sched, sumState, group, Opm::Phase::GAS, simStep) ? 1 : -1;
     }
 }
 
