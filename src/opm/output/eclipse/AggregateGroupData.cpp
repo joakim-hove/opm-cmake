@@ -470,11 +470,10 @@ void injectionGroup(const Opm::Schedule&     sched,
     // WATER INJECTION GROUP CONTROL
     if (group.hasInjectionControl(Opm::Phase::WATER)) {
 
-        if (is_field) {
+        if (is_field)
             //set value for the group's availability for higher level control for injection
             iGrp[nwgmax + IGroup::WInjHighLevCtrl] = 0;
-            iGrp[nwgmax + IGroup::GInjHighLevCtrl] = 0;
-        } else {
+        else {
 
             const auto& injection_controls = group.injectionControls(Opm::Phase::WATER, sumState);
             Opm::Group::InjectionCMode active_cmode = Opm::Group::InjectionCMode::NONE;
@@ -536,11 +535,10 @@ void injectionGroup(const Opm::Schedule&     sched,
 
     // GAS INJECTION GROUP CONTROL
     if (group.hasInjectionControl(Opm::Phase::GAS)) {
-        if (is_field) {
+        if (is_field)
             //set value for the group's availability for higher level control for injection
             iGrp[nwgmax + IGroup::GInjHighLevCtrl] = 0;
-            iGrp[nwgmax + IGroup::WInjHighLevCtrl] = 0;
-        } else {
+        else {
 
             const auto& injection_controls = group.injectionControls(Opm::Phase::GAS, sumState);
             Opm::Group::InjectionCMode active_cmode = Opm::Group::InjectionCMode::NONE;
