@@ -476,11 +476,8 @@ void injectionGroup(const Opm::Schedule&     sched,
         else {
 
             const auto& injection_controls = group.injectionControls(Opm::Phase::WATER, sumState);
-            Opm::Group::InjectionCMode active_cmode = Opm::Group::InjectionCMode::NONE;
-            const auto cur_inj_ctrl = (group.name() == "FIELD") ? sumState.get("FMCTW") :
-                                      sumState.get_group_var(group.name(), "GMCTW");
-            if (cur_inj_ctrl >= 0)
-                active_cmode = Opm::Group::InjectionCModeFromInt(static_cast<int>(cur_inj_ctrl));
+            const auto cur_inj_ctrl = static_cast<int>((group.name() == "FIELD") ? sumState.get("FMCTW") : sumState.get_group_var(group.name(), "GMCTW"));
+            Opm::Group::InjectionCMode active_cmode = Opm::Group::InjectionCModeFromInt(cur_inj_ctrl);
 
             const auto& deck_cmode = (group.hasInjectionControl(Opm::Phase::WATER))
                                      ? injection_controls.cmode : Opm::Group::InjectionCMode::NONE;
@@ -524,7 +521,7 @@ void injectionGroup(const Opm::Schedule&     sched,
                 iGrp[nwgmax + IGroup::WInjActiveCMode]
                     = (guide_rate_def != Opm::Group::GuideRateInjTarget::NO_GUIDE_RATE) ? cgroup_control : 0;
             } else {
-                iGrp[nwgmax + IGroup::WInjActiveCMode] = static_cast<int>(cur_inj_ctrl);
+                iGrp[nwgmax + IGroup::WInjActiveCMode] = cur_inj_ctrl;
             }
         }
     }
@@ -541,11 +538,8 @@ void injectionGroup(const Opm::Schedule&     sched,
         else {
 
             const auto& injection_controls = group.injectionControls(Opm::Phase::GAS, sumState);
-            Opm::Group::InjectionCMode active_cmode = Opm::Group::InjectionCMode::NONE;
-            const auto cur_inj_ctrl = (group.name() == "FIELD") ? sumState.get("FMCTG") :
-                                      sumState.get_group_var(group.name(), "GMCTG");
-            if (cur_inj_ctrl >= 0)
-                active_cmode = Opm::Group::InjectionCModeFromInt(static_cast<int>(cur_inj_ctrl));
+            const auto cur_inj_ctrl = static_cast<int>((group.name() == "FIELD") ? sumState.get("FMCTG") : sumState.get_group_var(group.name(), "GMCTG"));
+            Opm::Group::InjectionCMode active_cmode = Opm::Group::InjectionCModeFromInt(cur_inj_ctrl);
 
             const auto& deck_cmode = (group.hasInjectionControl(Opm::Phase::GAS))
                                      ? injection_controls.cmode : Opm::Group::InjectionCMode::NONE;
@@ -589,7 +583,7 @@ void injectionGroup(const Opm::Schedule&     sched,
                 iGrp[nwgmax + IGroup::GInjActiveCMode]
                     = (guide_rate_def != Opm::Group::GuideRateInjTarget::NO_GUIDE_RATE) ? cgroup_control : 0;
             } else {
-                iGrp[nwgmax + IGroup::GInjActiveCMode] = static_cast<int>(cur_inj_ctrl);
+                iGrp[nwgmax + IGroup::GInjActiveCMode] = cur_inj_ctrl;
             }
         }
     } else {
