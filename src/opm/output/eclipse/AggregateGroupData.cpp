@@ -308,8 +308,8 @@ void productionGroup(const Opm::Schedule&     sched,
     const auto& production_controls = group.productionControls(sumState);
     const auto& prod_guide_rate_def = production_controls.guide_rate_def;
     Opm::Group::ProductionCMode active_cmode = Opm::Group::ProductionCMode::NONE;
-    auto cur_prod_ctrl = (group.name() == "FIELD") ? sumState.get("FMCTP", -1) :
-                         sumState.get_group_var(group.name(), "GMCTP", -1);
+    auto cur_prod_ctrl = (group.name() == "FIELD") ? sumState.get("FMCTP") :
+                         sumState.get_group_var(group.name(), "GMCTP");
     if (cur_prod_ctrl >= 0)
         active_cmode = Opm::Group::ProductionCModeFromInt(static_cast<int>(cur_prod_ctrl));
 
@@ -328,7 +328,7 @@ void productionGroup(const Opm::Schedule&     sched,
     const auto& deck_cmode = group.prod_cmode();
 
     if (cgroup && (group.getGroupType() != Opm::Group::GroupType::NONE)) {
-        auto cgroup_control = (cgroup->name() == "FIELD") ? static_cast<int>(sumState.get("FMCTP", 0)) : static_cast<int>(sumState.get_group_var(cgroup->name(), "GMCTP", 0));
+        auto cgroup_control = (cgroup->name() == "FIELD") ? static_cast<int>(sumState.get("FMCTP")) : static_cast<int>(sumState.get_group_var(cgroup->name(), "GMCTP"));
         iGrp[nwgmax + IGroup::ProdActiveCMode]
             = (prod_guide_rate_def != Opm::Group::GuideRateProdTarget::NO_GUIDE_RATE) ? cgroup_control : 0;
     } else {
@@ -478,8 +478,8 @@ void injectionGroup(const Opm::Schedule&     sched,
 
             const auto& injection_controls = group.injectionControls(Opm::Phase::WATER, sumState);
             Opm::Group::InjectionCMode active_cmode = Opm::Group::InjectionCMode::NONE;
-            const auto cur_inj_ctrl = (group.name() == "FIELD") ? sumState.get("FMCTW", -1) :
-                                      sumState.get_group_var(group.name(), "GMCTW", -1);
+            const auto cur_inj_ctrl = (group.name() == "FIELD") ? sumState.get("FMCTW") :
+                                      sumState.get_group_var(group.name(), "GMCTW");
             if (cur_inj_ctrl >= 0)
                 active_cmode = Opm::Group::InjectionCModeFromInt(static_cast<int>(cur_inj_ctrl));
 
@@ -521,7 +521,7 @@ void injectionGroup(const Opm::Schedule&     sched,
 
             iGrp[nwgmax + IGroup::GConInjeWInjCMode] = Opm::Group::InjectionCMode2Int(deck_cmode);
             if (cgroup && (group.getGroupType() != Opm::Group::GroupType::NONE)) {
-                auto cgroup_control = (cgroup->name() == "FIELD") ? static_cast<int>(sumState.get("FMCTW", 0)) : static_cast<int>(sumState.get_group_var(cgroup->name(), "GMCTW", 0));
+                auto cgroup_control = (cgroup->name() == "FIELD") ? static_cast<int>(sumState.get("FMCTW")) : static_cast<int>(sumState.get_group_var(cgroup->name(), "GMCTW"));
                 iGrp[nwgmax + IGroup::WInjActiveCMode]
                     = (guide_rate_def != Opm::Group::GuideRateInjTarget::NO_GUIDE_RATE) ? cgroup_control : 0;
             } else {
@@ -544,8 +544,8 @@ void injectionGroup(const Opm::Schedule&     sched,
 
             const auto& injection_controls = group.injectionControls(Opm::Phase::GAS, sumState);
             Opm::Group::InjectionCMode active_cmode = Opm::Group::InjectionCMode::NONE;
-            const auto cur_inj_ctrl = (group.name() == "FIELD") ? sumState.get("FMCTG", -1) :
-                                      sumState.get_group_var(group.name(), "GMCTG", -1);
+            const auto cur_inj_ctrl = (group.name() == "FIELD") ? sumState.get("FMCTG") :
+                                      sumState.get_group_var(group.name(), "GMCTG");
             if (cur_inj_ctrl >= 0)
                 active_cmode = Opm::Group::InjectionCModeFromInt(static_cast<int>(cur_inj_ctrl));
 
@@ -587,7 +587,7 @@ void injectionGroup(const Opm::Schedule&     sched,
 
             iGrp[nwgmax + IGroup::GConInjeGInjCMode] = Opm::Group::InjectionCMode2Int(deck_cmode);
             if (cgroup && (group.getGroupType() != Opm::Group::GroupType::NONE)) {
-                auto cgroup_control = (cgroup->name() == "FIELD") ? static_cast<int>(sumState.get("FMCTG", 0)) : static_cast<int>(sumState.get_group_var(cgroup->name(), "GMCTG", 0));
+                auto cgroup_control = (cgroup->name() == "FIELD") ? static_cast<int>(sumState.get("FMCTG")) : static_cast<int>(sumState.get_group_var(cgroup->name(), "GMCTG"));
                 iGrp[nwgmax + IGroup::GInjActiveCMode]
                     = (guide_rate_def != Opm::Group::GuideRateInjTarget::NO_GUIDE_RATE) ? cgroup_control : 0;
             } else {
