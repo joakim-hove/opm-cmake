@@ -18,6 +18,7 @@
 */
 
 #include <chrono>
+#include <ctime>
 #include <fmt/format.h>
 #include <unordered_set>
 
@@ -184,6 +185,7 @@ std::size_t ScheduleDeck::restart_offset() const {
 ScheduleDeck::ScheduleDeck(const Deck& deck, const ScheduleRestartInfo& rst_info) {
     const std::unordered_set<std::string> skiprest_include = {"VFPPROD", "VFPINJ", "RPTSCHED", "RPTRST", "TUNING", "MESSAGES"};
     time_point start_time;
+    time_point load_start;
     if (deck.hasKeyword("START")) {
         // Use the 'START' keyword to find out the start date (if the
         // keyword was specified)
@@ -200,17 +202,26 @@ ScheduleDeck::ScheduleDeck(const Deck& deck, const ScheduleRestartInfo& rst_info
     this->m_restart_time = TimeService::from_time_t(rst_info.time);
     this->m_restart_offset = rst_info.report_step;
     this->skiprest = rst_info.skiprest;
-    if (this->m_restart_offset > 0) {
+    if (this->m_restart_offset > 0 && !this->skiprest) {
         for (std::size_t it = 0; it < this->m_restart_offset; it++) {
-            this->m_blocks.emplace_back(KeywordLocation{}, ScheduleTimeType::RESTART, start_time);
-            if (it < this->m_restart_offset - 1)
-                this->m_blocks.back().end_time(start_time);
+            if (it == 0)
+                this->m_blocks.emplace_back(KeywordLocation{}, ScheduleTimeType::START, start_time);
+            else
+                this->m_blocks.emplace_back(KeywordLocation{}, ScheduleTimeType::RESTART, start_time);
+            this->m_blocks.back().end_time(start_time);
         }
-    } else
+        this->m_blocks.back().end_time(this->m_restart_time);
+        fmt::print("Restart time: {}\n", std::chrono::system_clock::to_time_t(this->m_restart_time));
+        fmt::print("Size        : {}\n", this->m_blocks.size());
+        fmt::print("Last time   : {}\n", std::chrono::system_clock::to_time_t(this->m_blocks.back().end_time().value()));
+        this->m_blocks.emplace_back(KeywordLocation{}, ScheduleTimeType::RESTART, this->m_restart_time);
+        load_start = this->m_restart_time;
+    } else {
         this->m_blocks.emplace_back(KeywordLocation{}, ScheduleTimeType::START, start_time);
+        load_start = start_time;
+    }
 
-
-    ScheduleDeckContext context(this->m_restart_offset > 0, start_time);
+    ScheduleDeckContext context(this->skiprest, load_start);
     for( const auto& keyword : SCHEDULESection(deck)) {
         if (keyword.name() == "DATES") {
             for (size_t recordIndex = 0; recordIndex < keyword.size(); recordIndex++) {
@@ -259,8 +270,11 @@ void ScheduleDeck::add_block(ScheduleTimeType time_type, const time_point& t, Sc
 
         if (t > this->m_restart_time) {
             if (this->skiprest) {
-                TimeStampUTC ts(TimeService::to_time_t(this->m_restart_time));
-                auto reason = fmt::format("Have scanned past restart data: {:4d}-{:02d}-{:02d}", ts.year(), ts.month(), ts.day());
+                TimeStampUTC rst(TimeService::to_time_t(this->m_restart_time));
+                TimeStampUTC current(TimeService::to_time_t(t));
+                auto reason = fmt::format("At date: {:4d}-{:02d}-{:02d} - scanned past restart data: {:4d}-{:02d}-{:02d}",
+                                          current.year(), current.month(), current.day(),
+                                          rst.year(), rst.month(), rst.day());
                 throw OpmInputError(reason, location);
             }
             context.rst_skip = false;
@@ -275,6 +289,8 @@ void ScheduleDeck::add_TSTEP(const DeckKeyword& TSTEPKeyword, ScheduleDeckContex
     const auto &item = TSTEPKeyword.getRecord(0).getItem(0);
     for (size_t itemIndex = 0; itemIndex < item.data_size(); itemIndex++) {
         auto next_time = context.last_time + std::chrono::duration_cast<time_point::duration>(std::chrono::duration<double>(item.getSIDouble(itemIndex)));
+        TimeStampUTC ts(TimeService::to_time_t(next_time));
+        fmt::print("Adding block starting at: {:4d}-{:02d}-{:02d}\n", ts.year(), ts.month(), ts.day());
         this->add_block(ScheduleTimeType::TSTEP, next_time, context, TSTEPKeyword.location());
     }
 }

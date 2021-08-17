@@ -136,6 +136,22 @@ namespace {
             if (! this->restart_output.writeRestartFile(restart_step))
                 this->restart_output.addRestartOutput(restart_step);
             this->iterateScheduleSection( restart_step, this->m_sched_deck.size(), parseContext, errors, false, nullptr, &grid, &fp, "");
+
+            auto t = [](time_point tp) {
+                return std::chrono::system_clock::to_time_t(tp);
+            };
+
+
+            for (std::size_t report_step = 0; report_step < this->size() - 1; report_step++) {
+                const auto& deck_block = this->m_sched_deck[report_step];
+                const auto& state_block = this->operator[](report_step);
+                fmt::print("Step: {}   deck: {} - {}        State: {} - {}\n",
+                           report_step,
+                           t(deck_block.start_time()),
+                           t(deck_block.end_time().value()),
+                           t(state_block.start_time()),
+                           t(state_block.end_time()));
+            }
         } else
             this->iterateScheduleSection( 0, this->m_sched_deck.size(), parseContext, errors, false, nullptr, &grid, &fp, "");
     }
