@@ -130,4 +130,5 @@ void compare_sched(const std::string& base_deck,
 
 BOOST_AUTO_TEST_CASE(LoadRestartSim) {
     compare_sched("SPE1CASE2.DATA", "SPE1CASE2_RESTART_SKIPREST.DATA", "SPE1CASE2.X0060", 60);
+    compare_sched("SPE1CASE2.DATA", "SPE1CASE2_RESTART.DATA", "SPE1CASE2.X0060", 60);
 }
