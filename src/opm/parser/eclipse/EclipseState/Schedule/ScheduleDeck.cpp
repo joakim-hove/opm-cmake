@@ -185,7 +185,6 @@ std::size_t ScheduleDeck::restart_offset() const {
 ScheduleDeck::ScheduleDeck(const Deck& deck, const ScheduleRestartInfo& rst_info) {
     const std::unordered_set<std::string> skiprest_include = {"VFPPROD", "VFPINJ", "RPTSCHED", "RPTRST", "TUNING", "MESSAGES"};
     time_point start_time;
-    time_point load_start;
     if (deck.hasKeyword("START")) {
         // Use the 'START' keyword to find out the start date (if the
         // keyword was specified)
@@ -202,7 +201,7 @@ ScheduleDeck::ScheduleDeck(const Deck& deck, const ScheduleRestartInfo& rst_info
     this->m_restart_time = TimeService::from_time_t(rst_info.time);
     this->m_restart_offset = rst_info.report_step;
     this->skiprest = rst_info.skiprest;
-    if (this->m_restart_offset > 0 && !this->skiprest) {
+    if (this->m_restart_offset) {
         for (std::size_t it = 0; it < this->m_restart_offset; it++) {
             if (it == 0)
                 this->m_blocks.emplace_back(KeywordLocation{}, ScheduleTimeType::START, start_time);
@@ -210,18 +209,17 @@ ScheduleDeck::ScheduleDeck(const Deck& deck, const ScheduleRestartInfo& rst_info
                 this->m_blocks.emplace_back(KeywordLocation{}, ScheduleTimeType::RESTART, start_time);
             this->m_blocks.back().end_time(start_time);
         }
-        this->m_blocks.back().end_time(this->m_restart_time);
-        fmt::print("Restart time: {}\n", std::chrono::system_clock::to_time_t(this->m_restart_time));
-        fmt::print("Size        : {}\n", this->m_blocks.size());
-        fmt::print("Last time   : {}\n", std::chrono::system_clock::to_time_t(this->m_blocks.back().end_time().value()));
-        this->m_blocks.emplace_back(KeywordLocation{}, ScheduleTimeType::RESTART, this->m_restart_time);
-        load_start = this->m_restart_time;
-    } else {
+        if (!this->skiprest) {
+            this->m_blocks.back().end_time(this->m_restart_time);
+            fmt::print("Restart time: {}\n", std::chrono::system_clock::to_time_t(this->m_restart_time));
+            fmt::print("Size        : {}\n", this->m_blocks.size());
+            fmt::print("Last time   : {}\n", std::chrono::system_clock::to_time_t(this->m_blocks.back().end_time().value()));
+            this->m_blocks.emplace_back(KeywordLocation{}, ScheduleTimeType::RESTART, this->m_restart_time);
+        }
+    } else
         this->m_blocks.emplace_back(KeywordLocation{}, ScheduleTimeType::START, start_time);
-        load_start = start_time;
-    }
 
-    ScheduleDeckContext context(this->skiprest, load_start);
+    ScheduleDeckContext context(this->skiprest, this->m_blocks.back().start_time());
     for( const auto& keyword : SCHEDULESection(deck)) {
         if (keyword.name() == "DATES") {
             for (size_t recordIndex = 0; recordIndex < keyword.size(); recordIndex++) {
