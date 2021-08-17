@@ -93,19 +93,31 @@ BOOST_AUTO_TEST_CASE(LoadRST) {
     }
 }
 
-BOOST_AUTO_TEST_CASE(LoadRestartSim) {
-    auto python = std::make_shared<Python>();
+void compare_sched(const std::string& base_deck,
+                   const std::string& rst_deck,
+                   const std::string& rst_fname,
+                   std::size_t restart_step)
+{
     Parser parser;
-    auto deck = parser.parseFile("SPE1CASE2.DATA");
+    auto python = std::make_shared<Python>();
+    auto deck = parser.parseFile(base_deck);
     EclipseState ecl_state(deck);
     Schedule sched(deck, ecl_state, python);
 
-    auto restart_deck = parser.parseFile("SPE1CASE2_RESTART_SKIPREST.DATA");
-    auto rst_file = std::make_shared<EclIO::ERst>("SPE1CASE2.X0060");
-    auto rst_view = std::make_shared<EclIO::RestartFileView>(std::move(rst_file), 60);
+    auto restart_deck = parser.parseFile(rst_deck);
+    auto rst_file = std::make_shared<EclIO::ERst>(rst_fname);
+    auto rst_view = std::make_shared<EclIO::RestartFileView>(std::move(rst_file), restart_step);
     auto rst_state = RestartIO::RstState::load(std::move(rst_view));
     EclipseState ecl_state_restart(restart_deck);
     Schedule restart_sched(restart_deck, ecl_state_restart, python, {}, &rst_state);
 
-    // Verify that sched and restart_sched are identical from report_step 60 and onwords.
+    BOOST_CHECK_EQUAL(restart_sched.size(), sched.size());
+    for (std::size_t report_step=restart_step; report_step < sched.size(); report_step++)
+        BOOST_CHECK(sched[report_step] == restart_sched[report_step]);
+}
+
+
+
+BOOST_AUTO_TEST_CASE(LoadRestartSim) {
+    compare_sched("SPE1CASE2.DATA", "SPE1CASE2_RESTART_SKIPREST.DATA", "SPE1CASE2.X0060", 60);
 }
