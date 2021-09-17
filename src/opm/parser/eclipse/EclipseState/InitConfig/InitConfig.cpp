@@ -18,6 +18,8 @@
  */
 
 #include <iostream>
+#include <fmt/format.h>
+#include <opm/common/utility/FileSystem.hpp>
 
 #include <opm/parser/eclipse/Deck/Deck.hpp>
 #include <opm/parser/eclipse/Deck/DeckItem.hpp>
@@ -69,13 +71,21 @@ namespace Opm {
         }
 
         int step = record.getItem( 1 ).get< int >(0);
-        const std::string& root = record.getItem( 0 ).get< std::string >( 0 );
-        const std::string& input_path = deck.getInputPath();
-
-        if (root[0] == '/' || input_path.empty())
-            this->setRestart(root, step);
-        else
-            this->setRestart( input_path + "/" + root, step );
+        const auto& restart_base = record.getItem( 0 ).get< std::string >( 0 );
+        const auto& input_path = deck.getInputPath();
+        printf("restart_base: %s\n", restart_base.c_str());
+        if (restart_base[0] == '/' || input_path.empty())
+            this->setRestart( restart_base, step );
+        else {
+            /*
+              In the case a relative path argument in the RESTART keyword the
+              path we store is the relative from the process CWD to the restart
+              file, and *not* the relative path from the DATA file to the
+              restart file.
+            */
+            auto full_path = filesystem::path( fmt::format("{}/{}", input_path, restart_base) );
+            this->setRestart( filesystem::relative( full_path, filesystem::current_path()).string(), step );
+        }
     }
 
     InitConfig InitConfig::serializeObject()
