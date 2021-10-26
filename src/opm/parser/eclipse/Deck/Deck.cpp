@@ -69,16 +69,15 @@ namespace Opm {
         return this->offsets( keyword ).size();
    }
 
-    const std::vector< const DeckKeyword* > DeckView::getKeywordList( const std::string& keyword ) const {
+   const std::vector<std::reference_wrapper<const DeckKeyword>> DeckView::getKeywordList( const std::string& keyword ) const {
         if( !hasKeyword( keyword ) ) return {};
 
         const auto& indices = this->offsets( keyword );
 
-        std::vector< const DeckKeyword* > ret;
-        ret.reserve( indices.size() );
+        std::vector<std::reference_wrapper<const DeckKeyword>> ret;
 
         for( size_t i : indices )
-            ret.push_back( &this->getKeyword( i ) );
+            ret.push_back( std::cref(this->getKeyword( i )) );
 
         return ret;
     }

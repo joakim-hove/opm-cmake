@@ -50,13 +50,14 @@ namespace Opm {
         // there might be multiple keywords of keyword AQUNUM, it is not totally
         // clear about the rules here. For now, we take care of all the keywords
         const auto& aqunum_keywords = deck.getKeywordList<AQUNUM>();
-        for (const auto& keyword : aqunum_keywords) {
-            for (const auto& record : *keyword) {
+        for (const auto& keyword_ref : aqunum_keywords) {
+            const auto& keyword = keyword_ref.get();
+            for (const auto& record : keyword) {
                 const NumericalAquiferCell aqu_cell(this->m_num_records++, record, grid, field_props);
                 if (cells.count(aqu_cell.global_index) > 0) {
                     auto error = fmt::format("Numerical aquifer cell at ({}, {}, {}) is declared more than once",
                                              aqu_cell.I + 1, aqu_cell.J + 1, aqu_cell.K + 1);
-                    throw OpmInputError(error, keyword->location());
+                    throw OpmInputError(error, keyword.location());
                 } else {
                     this->addAquiferCell(aqu_cell);
                     cells.insert(aqu_cell.global_index);

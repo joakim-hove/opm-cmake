@@ -94,8 +94,9 @@ bool is_neighbor(const EclipseGrid& grid, std::size_t g1, std::size_t g2) {
 
 
     void NNC::load_input(const EclipseGrid& grid, const Deck& deck) {
-        for (const auto& keyword_ptr : deck.getKeywordList<ParserKeywords::NNC>()) {
-            for (const auto& record : *keyword_ptr) {
+        for (const auto& keyword_ref : deck.getKeywordList<ParserKeywords::NNC>()) {
+            const auto& keyword = keyword_ref.get();
+            for (const auto& record : keyword) {
                 auto index_pair = make_index_pair(grid, record);
                 if (!index_pair)
                     continue;
@@ -106,7 +107,7 @@ bool is_neighbor(const EclipseGrid& grid, std::size_t g1, std::size_t g2) {
             }
 
             if (!this->m_nnc_location)
-                this->m_nnc_location = keyword_ptr->location();
+                this->m_nnc_location = keyword.location();
         }
 
         std::sort(this->m_input.begin(), this->m_input.end());
@@ -115,8 +116,9 @@ bool is_neighbor(const EclipseGrid& grid, std::size_t g1, std::size_t g2) {
 
     void NNC::load_edit(const EclipseGrid& grid, const Deck& deck) {
         std::vector<NNCdata> nnc_edit;
-        for (const auto& keyword_ptr : deck.getKeywordList<ParserKeywords::EDITNNC>()) {
-            for (const auto& record : *keyword_ptr) {
+        for (const auto& keyword_ref : deck.getKeywordList<ParserKeywords::EDITNNC>()) {
+            const auto& keyword = keyword_ref.get();
+            for (const auto& record : keyword) {
                 double tran_mult = record.getItem(6).get<double>(0);
                 if (tran_mult == 1.0)
                     continue;
@@ -133,7 +135,7 @@ bool is_neighbor(const EclipseGrid& grid, std::size_t g1, std::size_t g2) {
             }
 
             if (!this->m_edit_location)
-                this->m_edit_location = keyword_ptr->location();
+                this->m_edit_location = keyword.location();
         }
 
         std::sort(nnc_edit.begin(), nnc_edit.end());

@@ -21,6 +21,8 @@
 #ifndef OPM_PARSER_MULTREGTSCANNER_HPP
 #define OPM_PARSER_MULTREGTSCANNER_HPP
 
+#include <functional>
+
 #include <opm/parser/eclipse/EclipseState/Grid/FaceDir.hpp>
 
 
@@ -91,7 +93,7 @@ namespace Opm {
         MULTREGTScanner(const MULTREGTScanner& data);
         MULTREGTScanner(const GridDims& grid,
                         const FieldPropsManager* fp_arg,
-                        const std::vector< const DeckKeyword* >& keywords);
+                        const std::vector<std::reference_wrapper<const DeckKeyword>>& keywords);
 
         static MULTREGTScanner serializeObject();
 

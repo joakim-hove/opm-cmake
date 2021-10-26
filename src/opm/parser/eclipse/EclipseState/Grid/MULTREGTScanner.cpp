@@ -108,7 +108,7 @@ std::vector<int> unique(const std::vector<int>& data) {
     */
      MULTREGTScanner::MULTREGTScanner(const GridDims& grid,
                                       const FieldPropsManager* fp_arg,
-                                      const std::vector< const DeckKeyword* >& keywords) :
+                                      const std::vector<std::reference_wrapper<const DeckKeyword>>& keywords) :
          nx(grid.getNX()),
          ny(grid.getNY()),
          nz(grid.getNZ()),
@@ -116,7 +116,7 @@ std::vector<int> unique(const std::vector<int>& data) {
 
         this->default_region = this->fp->default_region();
         for (size_t idx = 0; idx < keywords.size(); idx++)
-            this->addKeyword(*keywords[idx] , this->default_region);
+            this->addKeyword(keywords[idx].get() , this->default_region);
 
         MULTREGTSearchMap searchPairs;
         for (std::vector<MULTREGTRecord>::const_iterator record = m_records.begin(); record != m_records.end(); ++record) {

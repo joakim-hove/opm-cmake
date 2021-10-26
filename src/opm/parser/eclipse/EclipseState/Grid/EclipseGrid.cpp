@@ -1796,8 +1796,9 @@ std::vector<double> EclipseGrid::createDVector(const std::array<int,3>& dims, st
             return;
         }
         const auto &aqunum_keywords = deck.getKeywordList<AQUNUM>();
-        for (const auto &keyword : aqunum_keywords) {
-            for (const auto &record : *keyword) {
+        for (const auto &keyword_ref : aqunum_keywords) {
+            const auto& keyword = keyword_ref.get();
+            for (const auto &record : keyword) {
                 const size_t i = record.getItem<AQUNUM::I>().get<int>(0) - 1;
                 const size_t j = record.getItem<AQUNUM::J>().get<int>(0) - 1;
                 const size_t k = record.getItem<AQUNUM::K>().get<int>(0) - 1;

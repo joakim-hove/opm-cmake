@@ -53,10 +53,11 @@ bool checkDeck( const Deck& deck, const Parser& parser, const ParseContext& pars
     }
 
     const std::string& deckUnitSystem = uppercase(deck.getActiveUnitSystem().getName());
-    for (const auto& keyword : deck.getKeywordList("FILEUNIT")) {
-        const std::string& fileUnitSystem = uppercase(keyword->getRecord(0).getItem("FILE_UNIT_SYSTEM").getTrimmedString(0));
+    for (const auto& keyword_ref : deck.getKeywordList("FILEUNIT")) {
+        const auto& keyword = keyword_ref.get();
+        const std::string& fileUnitSystem = uppercase(keyword.getRecord(0).getItem("FILE_UNIT_SYSTEM").getTrimmedString(0));
         if (fileUnitSystem != deckUnitSystem) {
-            const auto& location = keyword->location();
+            const auto& location = keyword.location();
             std::string msg_fmt = "Unit system mismatch\n"
                                   "In {file} line {line}";
             parseContext.handleError(ParseContext::UNIT_SYSTEM_MISMATCH, msg_fmt, location, errorGuard);

@@ -20,6 +20,7 @@
 #ifndef DECK_HPP
 #define DECK_HPP
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <ostream>
@@ -82,9 +83,9 @@ namespace Opm {
                 return count( Keyword::keywordName );
             }
 
-            const std::vector< const DeckKeyword* > getKeywordList( const std::string& keyword ) const;
+            const std::vector<std::reference_wrapper<const DeckKeyword>> getKeywordList( const std::string& keyword ) const;
             template< class Keyword >
-            const std::vector< const DeckKeyword* > getKeywordList() const {
+            const std::vector<std::reference_wrapper<const DeckKeyword>> getKeywordList() const {
                 return getKeywordList( Keyword::keywordName );
             }
 

@@ -40,9 +40,10 @@ namespace Opm {
         std::map<size_t, std::map<size_t, NumericalAquiferConnection>> connections;
 
         const auto& aqucon_keywords = deck.getKeywordList<AQUCON>();
-        for (const auto& keyword : aqucon_keywords) {
-            OpmLog::info(OpmInputError::format("Initializing numerical aquifer connections from {keyword} in {file} line {line}", keyword->location()));
-            for (const auto& record : *keyword) {
+        for (const auto& keyword_ref : aqucon_keywords) {
+            const auto& keyword = keyword_ref.get();
+            OpmLog::info(OpmInputError::format("Initializing numerical aquifer connections from {keyword} in {file} line {line}", keyword.location()));
+            for (const auto& record : keyword) {
                 const auto cons_from_record = NumericalAquiferConnection::connectionsFromSingleRecord(grid, record);
                 for (auto con : cons_from_record) {
                     const size_t aqu_id = con.aquifer_id;
@@ -54,7 +55,7 @@ namespace Opm {
                         auto error = fmt::format("Numerical aquifer cell at ({}, {}, {}) is declared more than once"
                                                  " as a connection for numerical aquifer {}",
                                                  con.I + 1, con.J + 1, con.K + 1, con.aquifer_id);
-                        throw OpmInputError(error, keyword->location());
+                        throw OpmInputError(error, keyword.location());
                     }
                 }
             }

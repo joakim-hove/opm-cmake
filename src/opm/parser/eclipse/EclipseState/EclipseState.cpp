@@ -320,10 +320,10 @@ AquiferConfig load_aquifers(const Deck& deck, const TableManager& tables, NNC& i
 
     void EclipseState::complainAboutAmbiguousKeyword(const Deck& deck, const std::string& keywordName) {
         OpmLog::error("The " + keywordName + " keyword must be unique in the deck. Ignoring all!");
-        auto keywords = deck.getKeywordList(keywordName);
-        for (size_t i = 0; i < keywords.size(); ++i) {
+        for (const auto& keyword_ref : deck.getKeywordList(keywordName)) {
+            const auto& keyword = keyword_ref.get();
             std::string msg = "Ambiguous keyword "+keywordName+" defined here";
-            OpmLog::error(Log::fileMessage(keywords[i]->location(), msg));
+            OpmLog::error(Log::fileMessage(keyword.location(), msg));
         }
     }
 

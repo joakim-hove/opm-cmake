@@ -45,17 +45,15 @@ namespace Opm {
 
     FaultCollection::FaultCollection(const GRIDSection& gridSection,
                                      const GridDims& grid) {
-        const auto& faultKeywords = gridSection.getKeywordList<ParserKeywords::FAULTS>();
 
-        for (auto keyword_iter = faultKeywords.begin(); keyword_iter != faultKeywords.end(); ++keyword_iter) {
-            const auto& faultsKeyword = *keyword_iter;
-            OpmLog::info(OpmInputError::format("\nLoading faults from {keyword} in {file} line {line}", faultsKeyword->location()));
+        for (const auto& keyword_ref : gridSection.getKeywordList<ParserKeywords::FAULTS>()) {
+            const auto& faultsKeyword = keyword_ref.get();
+            OpmLog::info(OpmInputError::format("\nLoading faults from {keyword} in {file} line {line}", faultsKeyword.location()));
 
-            for (auto iter = faultsKeyword->begin(); iter != faultsKeyword->end(); ++iter) {
-                const auto& faultRecord = *iter;
-                const std::string& faultName = faultRecord.getItem(0).get< std::string >(0);
+            for (const auto& record : faultsKeyword) {
+                const std::string& faultName = record.getItem(0).get< std::string >(0);
 
-                addFaultFaces(grid, faultRecord, faultName);
+                addFaultFaces(grid, record, faultName);
             }
         }
     }
