@@ -199,7 +199,7 @@ function calls like
   schedule.close_well(w1, report_step)
   schedule.set_orat(w2, 1000, report_step)
 \end{code}
-to close a well and set the oil rate of another well. Unfortunately it proved
+to close one well and set the oil rate for another well. Unfortunately it proved
 very complex to get good semantics for combining such runtime changes with the
 keyword based model for \kw{SCHEDULE} section, so the current recommendation is
 actually to apply the keywords from \kw{ACTIONX} from the Python module when a
@@ -209,10 +209,10 @@ If/when the underlying \inlinecode{Schedule} implementation changes there is
 nothing per se in the \pyaction{} design which inhibits use of a better
 \inlinecode{Schedule} api in the future.}.
 
-The recommended way to achieve this is to create a normal \actionx{} keyword
-which is set up to run zero times, and then explicitly invoke that from the
-Python \inlinecode{run()} function. In the example below we create an \actionx{}
-\inlinecode{CLOSEWELLS} which will close all matching wells (the wellname '?')
+The recommended way to achieve this is to create a normal \actionx{} keyword,
+and then explicitly invoke that from the Python \inlinecode{run()} function. In
+the example below we create an \actionx{} \inlinecode{CLOSEWELLS} which will
+close all matching wells (the wellname '?')
 \begin{deck}
 ACTIONX
   CLOSEWELLS 0 /
@@ -225,12 +225,8 @@ WELOPEN
 
 ENDACTIO
 \end{deck}
-The \inlinecode{CLOSEWELLS} action is set up to run zero times, so the normal
-\actionx{} machinery will never run this action\footnote{The \kw{CLOSEWELL}
-action has an \emph{empty condition}, the \actionx{} keywords with empty
-condition will always evaluate as false.}. Then in the Python run function we go
-through all the wells and call the \inlinecode{CLOSEWELL} action to close those
-with \inlinecode{OPR < 1000}:
+Then in the Python run function we go through all the wells and call the
+\inlinecode{CLOSEWELL} action to close those with \inlinecode{OPR < 1000}:
 \begin{code}
 def run(ecl_state, schedule, report_step, summary_state, actionx_callback):
     close_wells = []
@@ -249,6 +245,17 @@ C++ and continues the simulator execution\footnote{This is documented in some
 detail as code comments of \inlinecode{Schedule::applyPyAction()} in the
 \path{Schedule.cpp} file.}.
 
+It is important that the dummy \actionx{} called from Python is not also run by
+the normal \actionx{} machinery. This is ensured in two ways:
+\begin{enumerate}
+  \item In the first line of the \actionx{} definition it is explicitly
+    mentioned that this action should be run zero times, i.e. the runtime
+    manager will never invoke it.
+  \item If the \kw{CLOSEWELLS} action is invoked by mistake the condition should
+    never evaluate to true, in the example above we have used an \emph{empty
+    condition} to ensure this.
+\end{enumerate}
+   
 
 \section{Implementing \udq{} like behavior}
 The \udq{} keyword has three different purposes - all based on defining 
@@ -401,4 +408,4 @@ def run(ecl_state, schedule, report_step, summary_state, actionx_callback):
 \end{code}
 
 If the user running \flow{} has different security credentials than the user
-submits the job, this has significant security implications.
+submitting the job, this has significant security implications.

@@ -448,7 +448,7 @@ WCONPROD
 /
 \end{deck}
 One point about this example is that the \udq{} variable \kw{WUOPR} which is
-used as as control in the \kw{WCONPROD} is a well set, the lookup machinery will
+used as control in the \kw{WCONPROD} is a well set, the lookup machinery will
 automatically use the correct well index when assigning control value to a
 particular well.
 
@@ -461,7 +461,7 @@ evaluated \emph{just in time}.
 The \udq{} subcommand \kw{UNIT} can be used to assign a string which is used as
 output unit when the \udq{} variable is output to the summary file. This is
 \emph{only} a string and does not induce any unit conversion. All \udq{}
-evaluations are in terms of the corre deck units - irrespective of the \kw{UNIT}
+evaluations are in terms of the correct deck units - irrespective of the \kw{UNIT}
 subcommand. Consider the following
 \begin{deck}
 RUNSPEC
@@ -485,13 +485,13 @@ UDQ
   contain the water injection rate converted to field units.
 \item The \udq{} variable \kw{WUI} is evaluated as the water injection rate from
   \inlinecode{SummaryState} subtracted numerical value 100, \emph{it is solely the users 
-  responsability that the numerical value 100 represents water injection rate in
+  responsibility that the numerical value 100 represents water injection rate in
   field units.}
 \end{enumerate}
 
 Observe that the units are complicated, and non intuitive for \kw{UDA} values.
 The \kw{UDA} evaluation is based on the \inlinecode{SummaryState} class which is
-in deck units, the controls determined by \kw{UDA} evaluation must therefor be
+in deck units, the controls determined by \kw{UDA} evaluation must therefore be
 converted to SI units just when it is passed to the simulator. The initial
 design ambition was to block the deck units at the IO boundary, keeping the
 internals fully in SI. The \kw{UDA} concept is the exception which manages to
